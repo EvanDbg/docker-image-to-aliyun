@@ -32,8 +32,8 @@ RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 ENV DISABLE_TELEMETRY true
 
-ENV CODE_VERSION="3.4.0"
-RUN curl -sL https://github.com/cdr/code-server/releases/download/${CODE_VERSION}/code-server-${CODE_VERSION}-linux-x86_64.tar.gz | tar --strip-components=1 -zx -C /usr/local/bin code-server-${CODE_VERSION}-linux-x86_64/code-server
+ENV CODE_VERSION="2.1495-vsc1.38.1"
+RUN curl -sL https://github.com/cdr/code-server/releases/download/${CODE_VERSION}/code-server${CODE_VERSION}-linux-x86_64.tar.gz | tar --strip-components=1 -zx -C /usr/local/bin code-server${CODE_VERSION}-linux-x86_64/code-server
 
 # Setup theos
 ENV THEOS /opt/theos
