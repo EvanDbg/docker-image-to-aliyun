@@ -45,11 +45,6 @@ rm -rf sdk
 
 popd
 
-apt-get purge --yes --autoremove $BUILD_DEPS
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-rm $0
-
 curl -LO https://github.com/sbingner/llvm-project/releases/download/v10.0.0-1/linux-ios-arm64e-clang-toolchain.tar.lzma
 TMP=$(mktemp -d)
 tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C $TMP
