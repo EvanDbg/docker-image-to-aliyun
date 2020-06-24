@@ -21,8 +21,8 @@
 ## Usage Demo
 
 ```
-$ docker pull qusic/theos
-$ docker run -it --rm qusic/theos
+$ docker pull evvvvan/theos-vscode:latest
+$ docker run -it --rm --name code-server --security-opt=seccomp:unconfined -p 127.0.0.1:8080:8080 -v $(pwd):/home/coder/project evvvvan/theos-vscode:latest
 
 root@container:~# cd
 root@container:~# pwd
