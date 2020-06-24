@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-BUILD_DEPS="gcc g++ cmake autoconf git curl rename chrpath cpio libssl1.0-dev libxml2-dev"
+BUILD_DEPS="gcc g++ cmake autoconf git curl rename chrpath cpio libssl1.0-dev libxml2-dev nano"
 SDK_REPO="DavidSkrundz/sdks"
 SDK_LIST="iPhoneOS12.2.sdk"
 
