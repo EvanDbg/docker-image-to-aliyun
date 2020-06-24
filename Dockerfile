@@ -41,22 +41,16 @@ ENV PATH "$THEOS/bin:$PATH"
 COPY setup.sh .
 RUN ./setup.sh
 
-# Setup User
-RUN groupadd -r coder \
-    && useradd -m -r coder -g coder -s /bin/bash \
-    && echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
-USER coder
-
 # Setup User Visual Studio Code Extentions
-ENV VSCODE_USER "/home/coder/.local/share/code-server/User"
-ENV VSCODE_EXTENSIONS "/home/coder/.local/share/code-server/extensions"
+ENV VSCODE_USER "/home/root/.local/share/code-server/User"
+ENV VSCODE_EXTENSIONS "/home/root/.local/share/code-server/extensions"
 
 RUN mkdir -p ${VSCODE_USER}
-COPY --chown=coder:coder settings.json /home/coder/.local/share/code-server/User/
+COPY settings.json /home/root/.local/share/code-server/User/
 
 # Setup User Workspace
-RUN mkdir -p /home/coder/project
-WORKDIR /home/coder/project
+RUN mkdir -p /root/coder/project
+WORKDIR /home/root/project
 
 EXPOSE 8080
 
