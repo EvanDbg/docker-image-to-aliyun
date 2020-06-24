@@ -54,4 +54,4 @@ WORKDIR /home/root/project
 
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "code-server", "--host", "127.0.0.1"]
+ENTRYPOINT ["code-server"]
