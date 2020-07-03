@@ -24,19 +24,6 @@ mv staging/linux ../theos/toolchain/
 popd
 rm -rf toolchain
 
-git clone https://github.com/kabiroberai/swift-toolchain-linux.git toolchain
-pushd toolchain
-git clone https://github.com/mackyle/xar.git
-pushd xar/xar
-./autogen.sh --prefix=$(realpath out)
-make
-make install
-popd
-PATH=$(realpath xar/xar/out/bin):$PATH ./create-toolchain 5.0.1 ubuntu18.04
-find packages -type f -name "*.tar.gz" -exec tar -xzf {} -C ../theos/toolchain/ \; -quit
-popd
-rm -rf toolchain
-
 git clone https://github.com/$SDK_REPO.git sdk
 pushd sdk
 mv $SDK_LIST ../theos/sdks/
