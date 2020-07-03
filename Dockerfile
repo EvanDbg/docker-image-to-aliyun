@@ -1,57 +1,73 @@
-FROM ubuntu:18.04
+FROM lsiobase/ubuntu:arm64v8-bionic
 
-# Packages
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    gpg \
-    curl \
-    wget \
-    lsb-release \
-    add-apt-key \
-    ca-certificates \
-    dumb-init \
-    && rm -rf /var/lib/apt/lists/*
+# set version label
+ARG BUILD_DATE
+ARG VERSION
+ARG CODE_RELEASE
+LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="aptalca"
 
-# Common SDK
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    git \
-    sudo \
-    gdb \
-    pkg-config \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# environment settings
+ENV HOME="/config"
 
-# Code-Server
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    bsdtar \
-    openssl \
-    locales \
-    net-tools \
-    && rm -rf /var/lib/apt/lists/*
+RUN \
+ echo "**** install node repo ****" && \
+ apt-get update && \
+ apt-get install -y \
+	gnupg && \
+ curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
+ echo 'deb https://deb.nodesource.com/node_12.x bionic main' \
+	> /etc/apt/sources.list.d/nodesource.list && \
+ curl -s https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+ echo 'deb https://dl.yarnpkg.com/debian/ stable main' \
+	> /etc/apt/sources.list.d/yarn.list && \
+ echo "**** install build dependencies ****" && \
+ apt-get update && \
+ apt-get install -y \
+	build-essential \
+	libx11-dev \
+	libxkbfile-dev \
+	libsecret-1-dev \
+	pkg-config && \
+ echo "**** install runtime dependencies ****" && \
+ apt-get install -y \
+	git \
+	jq \
+	nano \
+	net-tools \
+	nodejs \
+	sudo \
+	yarn && \
+ echo "**** install code-server ****" && \
+ if [ -z ${CODE_RELEASE+x} ]; then \
+	CODE_RELEASE=$(curl -sX GET "https://api.github.com/repos/cdr/code-server/releases/latest" \
+	| awk '/tag_name/{print $4;exit}' FS='[""]'); \
+ fi && \
+ CODE_VERSION=$(echo "$CODE_RELEASE" | awk '{print substr($1,2); }') && \
+ yarn --production global add code-server@"$CODE_VERSION" && \
+ yarn cache clean && \
+ ln -s /node_modules/.bin/code-server /usr/bin/code-server && \
+ echo "**** clean up ****" && \
+ apt-get purge --auto-remove -y \
+	build-essential \
+	libx11-dev \
+	libxkbfile-dev \
+	libsecret-1-dev \
+	pkg-config && \
+ apt-get clean && \
+ rm -rf \
+	/tmp/* \
+	/var/lib/apt/lists/* \
+	/var/tmp/*
 
-RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-ENV LANG en_US.utf8
-ENV DISABLE_TELEMETRY true
+# add local files
+COPY /root /
 
-ENV CODE_VERSION="2.1485-vsc1.38.1"
-RUN curl -sL https://github.com/cdr/code-server/releases/download/${CODE_VERSION}/code-server${CODE_VERSION}-linux-x86_64.tar.gz | tar --strip-components=1 -zx -C /usr/local/bin code-server${CODE_VERSION}-linux-x86_64/code-server
+# ports and volumes
+EXPOSE 8443
 
 # Setup theos
 ENV THEOS /opt/theos
 ENV PATH "$THEOS/bin:$PATH"
 COPY setup.sh .
 RUN ./setup.sh
-
-# Setup User Visual Studio Code Extentions
-ENV VSCODE_USER "/home/root/.local/share/code-server/User"
-ENV VSCODE_EXTENSIONS "/home/root/.local/share/code-server/extensions"
-
-RUN mkdir -p ${VSCODE_USER}
-COPY settings.json /home/root/.local/share/code-server/User/
-
-# Setup User Workspace
-RUN mkdir -p /home/root/project
-WORKDIR /home/root/project
-
-EXPOSE 8080
-
-ENTRYPOINT ["code-server"]
