@@ -1,73 +1,53 @@
-FROM lsiobase/ubuntu:bionic
+FROM linuxserver/code-server:amd64-latest
 
-# set version label
-ARG BUILD_DATE
-ARG VERSION
-ARG CODE_RELEASE
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="aptalca"
-
-# environment settings
-ENV HOME="/config"
-
-RUN \
- echo "**** install node repo ****" && \
- apt-get update && \
- apt-get install -y \
-	gnupg && \
- curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
- echo 'deb https://deb.nodesource.com/node_12.x bionic main' \
-	> /etc/apt/sources.list.d/nodesource.list && \
- curl -s https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
- echo 'deb https://dl.yarnpkg.com/debian/ stable main' \
-	> /etc/apt/sources.list.d/yarn.list && \
- echo "**** install build dependencies ****" && \
- apt-get update && \
- apt-get install -y \
-	build-essential \
-	libx11-dev \
-	libxkbfile-dev \
-	libsecret-1-dev \
-	pkg-config && \
- echo "**** install runtime dependencies ****" && \
- apt-get install -y \
-	git \
-	jq \
-	nano \
-	net-tools \
-	nodejs \
-	sudo \
-	yarn && \
- echo "**** install code-server ****" && \
- if [ -z ${CODE_RELEASE+x} ]; then \
-	CODE_RELEASE=$(curl -sX GET "https://api.github.com/repos/cdr/code-server/releases/latest" \
-	| awk '/tag_name/{print $4;exit}' FS='[""]'); \
- fi && \
- CODE_VERSION=$(echo "$CODE_RELEASE" | awk '{print substr($1,2); }') && \
- yarn --production global add code-server@"$CODE_VERSION" && \
- yarn cache clean && \
- ln -s /node_modules/.bin/code-server /usr/bin/code-server && \
- echo "**** clean up ****" && \
- apt-get purge --auto-remove -y \
-	build-essential \
-	libx11-dev \
-	libxkbfile-dev \
-	libsecret-1-dev \
-	pkg-config && \
- apt-get clean && \
- rm -rf \
-	/tmp/* \
-	/var/lib/apt/lists/* \
-	/var/tmp/*
-
-# add local files
-COPY /root /
-
-# ports and volumes
-EXPOSE 8443
-
-# Setup theos
 ENV THEOS /opt/theos
 ENV PATH "$THEOS/bin:$PATH"
-COPY setup.sh .
-RUN ./setup.sh
+
+ENV BUILD_DEPS "gcc g++ cmake autoconf git curl rename chrpath cpio libssl1.0-dev libxml2-dev"
+ENV SDK_REPO "DavidSkrundz/sdks"
+ENV SDK_LIST "iPhoneOS12.2.sdk"
+
+RUN apt-get update
+RUN apt-get upgrade --yes
+RUN apt-get install --yes clang make perl rsync $BUILD_DEPS
+
+WORKDIR /opt
+RUN git clone https://github.com/theos/theos.git
+
+WORKDIR /opt/theos
+RUN git submodule update --init --recursive
+
+WORKDIR /opt
+RUN git clone https://github.com/kabiroberai/ios-toolchain-linux.git toolchain
+
+WORKDIR /opt/toolchain
+RUN ./prepare-toolchain
+RUN cp /usr/lib/llvm-6.0/lib/libLTO.so* staging/linux/iphone/lib/
+RUN mv staging/linux ../theos/toolchain/
+
+WORKDIR /opt
+RUN rm -rf toolchain
+
+RUN git clone https://github.com/$SDK_REPO.git sdk
+
+WORKDIR /opt/sdk
+RUN mv $SDK_LIST ../theos/sdks/
+
+WORKDIR /opt
+RUN rm -rf sdk
+
+RUN curl -LO https://github.com/sbingner/llvm-project/releases/download/v10.0.0-1/linux-ios-arm64e-clang-toolchain.tar.lzma
+
+RUN mkdir -p /arm64eToolchain
+RUN tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C /arm64eToolchain
+
+WORKDIR /arm64eToolchain/ios-arm64e-clang-toolchain/bin
+RUN find * ! -name clang-10 -and ! -name ldid -and ! -name ld64 -exec mv {} arm64-apple-darwin14-{} \;
+RUN find * -xtype l -exec sh -c "readlink {} | xargs -I{LINK} ln -f -s arm64-apple-darwin14-{LINK} {}" \;
+
+RUN mkdir -p $THEOS/toolchain/linux/iphone
+RUN rsync -a /arm64eToolchain/ios-arm64e-clang-toolchain/* $THEOS/toolchain/linux/iphone/
+
+RUN apt-get purge --yes --autoremove $BUILD_DEPS
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
