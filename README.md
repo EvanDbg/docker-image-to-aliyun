@@ -5,10 +5,6 @@
 * Swift 5.0.1 toolchain by [kabiroberai](https://github.com/kabiroberai/swift-toolchain-linux)
 * iOS 12.2 SDK from [DavidSkrundz](https://github.com/DavidSkrundz/sdks)
 
-## [VS Code Dev Container](vscode-dev-container)
-
-* Objective-C code intellisense
-* Project build task
 
 ## Integration Ideas
 
