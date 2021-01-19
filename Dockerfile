@@ -1,4 +1,4 @@
-FROM linuxserver/code-server:amd64-latest
+FROM linuxserver/code-server:arm64v8-latest
 
 ENV THEOS /opt/theos
 ENV PATH "$THEOS/bin:$PATH"
