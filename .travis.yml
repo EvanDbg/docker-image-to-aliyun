@@ -3,4 +3,7 @@ language: c
 compiler: gcc
 services:
   - docker
-script: docker build -t theos-code-server/arm64 -f Dockerfile .
+script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t evvvvan/theos-code-server:arm64 .
+  - docker push evvvvan/theos-code-server:arm64
