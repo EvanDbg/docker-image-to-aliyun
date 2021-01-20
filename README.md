@@ -1,4 +1,4 @@
-# Dockerized [Theos](https://github.com/theos/theos)
+# Dockerized [Theos](https://github.com/theos/theos) for Raspberry Pi 4B (arm64)
 
 * Based on Ubuntu 18.04
 * iOS toolchain by [kabiroberai](https://github.com/kabiroberai/ios-toolchain-linux)
