@@ -4,6 +4,7 @@ compiler: gcc
 services:
   - docker
 script:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t evvvvan/theos-code-server:arm64 .
-  - docker push evvvvan/theos-code-server:arm64
+  - docker build -t registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest .
+after_success:
+  - docker login --username=--username=yangf1023@icloud.com -p=$aliyun_pwd registry.cn-hangzhou.aliyuncs.com
+  - docker push registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest
