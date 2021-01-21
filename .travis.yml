@@ -6,5 +6,5 @@ services:
 script:
   - docker build -t registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest .
 after_success:
-  - docker login --username=--username=yangf1023@icloud.com -p=$aliyun_pwd registry.cn-hangzhou.aliyuncs.com
+  - docker login --username=yangf1023@icloud.com -p=$aliyun_pwd registry.cn-hangzhou.aliyuncs.com
   - docker push registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest
