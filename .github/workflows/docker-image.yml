@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker pull evvvvan/theos-code-server:arm64
+           docker tag evvvvan/theos-code-server:arm64 registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest
+           docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com
+           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest
