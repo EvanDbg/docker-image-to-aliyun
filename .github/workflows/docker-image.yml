@@ -1,8 +1,24 @@
 name: Docker Image CI
 
 on:
-  watch:
-    types: started
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      from:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Docker Hub Image'
+        # Default value if no value is explicitly provided
+        default: '****/****:****'
+        # Input has to be provided for the workflow to run
+        required: true
+
+      to:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Aliyun tag'
+        # Default value if no value is explicitly provided
+        default: 'latest'
+        # Input has to be provided for the workflow to run
+        required: true
 
 jobs:
 
@@ -12,8 +28,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Pull the Docker image
-      run: docker pull evvvvan/theos-code-server:arm64 && 
-           docker tag evvvvan/theos-code-server:arm64 registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest && 
+    - name: Pull the Docker image and push to aliyun
+      run: docker pull ${{ github.event.inputs.from }} && 
+           docker tag ${{ github.event.inputs.from }} registry.cn-hangzhou.aliyuncs.com/evan1s/image:${{ github.event.inputs.to }} && 
            docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
-           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/theos-pi:latest
+           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/image:${{ github.event.inputs.to }}
