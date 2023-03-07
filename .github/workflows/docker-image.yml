@@ -30,6 +30,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Pull the Docker image and push to aliyun
       run: docker pull ${{ github.event.inputs.from }} && 
-           docker tag ${{ github.event.inputs.from }} registry.cn-hangzhou.aliyuncs.com/evan1s/image:${{ github.event.inputs.to }} && 
+           docker tag ${{ github.event.inputs.from }} registry.cn-hangzhou.aliyuncs.com/evan1s/open:${{ github.event.inputs.to }} && 
            docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
-           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/image:${{ github.event.inputs.to }}
+           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/open:${{ github.event.inputs.to }}
