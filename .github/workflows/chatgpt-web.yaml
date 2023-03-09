@@ -1,0 +1,27 @@
+name: Docker Build and Push ChatGpt
+
+on:
+  push:
+    branches:
+      - main # 可以更改此处的分支名称
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: EvanDbg/chatgpt-web
+      uses: actions/checkout@v2
+      
+    - name: Login to AliCloud registry
+      uses: docker/login-action@v1
+      with:
+        registry: registry.cn-hangzhou.aliyuncs.com # 您的阿里云容器镜像服务地址
+        username: ${{ secrets.ALIYUN_USERNAME }} # 在 GitHub 仓库的 Secrets 中添加 ALIYUN_USERNAME
+        password: ${{ secrets.ALIYUN_PASSWORD }} # 在 GitHub 仓库的 Secrets 中添加 ALIYUN_PASSWORD
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web # 替换成您自己的命名空间和镜像名称
