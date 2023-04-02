@@ -14,6 +14,6 @@ jobs:
       run: git clone https://github.com/EvanDbg/ChatGPT-Proxy-V4 && 
            cd ChatGPT-Proxy-V4 && 
            docker build -t chatgpt-proxy-v4 . && 
-           docker tag chatgpt-web registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-proxy-v4 && 
+           docker tag chatgpt-proxy-v4 registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-proxy-v4 && 
            docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
            docker push registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-proxy-v4
