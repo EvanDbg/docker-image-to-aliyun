@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Pull the Docker image and push to aliyun
-      run: git clone https://github.com/EvanDbg/ChatGPT-Proxy-V4 && 
+      run: git clone -b chat_api_url https://github.com/EvanDbg/ChatGPT-Proxy-V4 && 
            cd ChatGPT-Proxy-V4 && 
            docker build -t chatgpt-proxy-v4 . && 
            docker tag chatgpt-proxy-v4 registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-proxy-v4 && 
