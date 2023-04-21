@@ -1,0 +1,31 @@
+name: Docker Build and Push ChatGpt
+
+on:
+  workflow_dispatch:
+  
+  repository_dispatch:
+    types: [chatgpt-web]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Pull the Docker image and push to aliyun
+      run: git clone https://github.com/EvanDbg/chatgpt-web && 
+           cd chatgpt-web && 
+           docker build -t chatgpt-web . && 
+           docker tag chatgpt-web registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web && 
+           docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
+           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web
+
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.8
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: bash /root/update3004.sh
