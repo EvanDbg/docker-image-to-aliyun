@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Pull the Docker image and push to aliyun
-      run: git clone https://github.com/EvanDbg/chatgpt-web && 
+      run: git clone https://github.com/Kerwin1202/chatgpt-web && 
            cd chatgpt-web && 
            docker build -t chatgpt-web . && 
            docker tag chatgpt-web registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web && 
