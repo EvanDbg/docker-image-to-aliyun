@@ -18,13 +18,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Pull the Docker image and push to aliyun
-      run: git clone -b ${{ github.event.inputs.branch_name }} https://github.com/EvanDbg/chatgpt-web && 
-           cd chatgpt-web && 
-           docker build -t chatgpt-web . && 
-           docker tag chatgpt-web registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web && 
-           docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
-           docker push registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web
+#     - name: Pull the Docker image and push to aliyun
+#       run: git clone -b ${{ github.event.inputs.branch_name }} https://github.com/EvanDbg/chatgpt-web && 
+#            cd chatgpt-web && 
+#            docker build -t chatgpt-web . && 
+#            docker tag chatgpt-web registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web && 
+#            docker login --username=yangf1023@icloud.com -p=${{ github.event.client_payload.aliyun_pwd || secrets.aliyun_pwd }} registry.cn-hangzhou.aliyuncs.com && 
+#            docker push registry.cn-hangzhou.aliyuncs.com/evan1s/open:chatgpt-web
+
+    - name: Checkout other repository
+      uses: actions/checkout@v2
+      with:
+           repository: EvanDbg/chatgpt-web # 要检出的仓库
+           ref: ${{ github.event.inputs.branch_name }} # 要检出的分支/标签/提交 ID
 
     - name: Login to Docker Hub
       uses: docker/login-action@v1
@@ -38,11 +44,11 @@ jobs:
           push: true
           tags: evvvvan/chatgpt-web:latest
 
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v0.1.8
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: bash /root/update3004.sh
+#     - name: executing remote ssh commands using password
+#       uses: appleboy/ssh-action@v0.1.8
+#       with:
+#         host: ${{ secrets.HOST }}
+#         username: ${{ secrets.USERNAME }}
+#         password: ${{ secrets.PASSWORD }}
+#         port: ${{ secrets.PORT }}
+#         script: bash /root/update3004.sh
