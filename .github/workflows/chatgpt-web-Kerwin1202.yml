@@ -10,6 +10,9 @@ on:
         default: 'Kerwin1202'
         # Input has to be provided for the workflow to run
         required: true
+        
+  repository_dispatch:
+    types: [chatgpt-web]
 
 jobs:
 
