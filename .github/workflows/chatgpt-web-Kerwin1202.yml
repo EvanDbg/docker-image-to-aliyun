@@ -44,11 +44,11 @@ jobs:
           push: true
           tags: evvvvan/chatgpt-web:latest
 
-#     - name: executing remote ssh commands using password
-#       uses: appleboy/ssh-action@v0.1.8
-#       with:
-#         host: ${{ secrets.HOST }}
-#         username: ${{ secrets.USERNAME }}
-#         password: ${{ secrets.PASSWORD }}
-#         port: ${{ secrets.PORT }}
-#         script: bash /root/update3004.sh
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.8
+      with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: bash /root/update3004.sh
