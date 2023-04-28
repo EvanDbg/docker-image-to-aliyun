@@ -2,9 +2,6 @@ name: Docker Build and Push ChatGpt
 
 on:
   workflow_dispatch:
-  
-  repository_dispatch:
-    types: [chatgpt-web]
 
 jobs:
 
